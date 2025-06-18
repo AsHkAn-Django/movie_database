@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from decimal import Decimal
+from django.utils.text import slugify
+import os
 
 
 
@@ -12,11 +14,16 @@ class Genre(models.Model):
         return self.title
 
 
+def movie_image_upload_path(instance, filename):
+    title_slug = slugify(instance.title)
+    return os.path.join('uploads', title_slug, filename)
+
+
 class Movie(models.Model):
     title = models.CharField(max_length=164)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE, related_name='movies')
     release_year = models.IntegerField(validators=[MaxValueValidator(2050), MinValueValidator(1950)])
-
+    image = models.ImageField(upload_to=movie_image_upload_path, blank=True)
 
     def get_average_rating(self):
         '''Get the average rating for this movie.'''
@@ -26,6 +33,9 @@ class Movie(models.Model):
         else:
             total = sum(rating.rate for rating in ratings)
         return Decimal(round(total / len(ratings), 1))
+
+    def get_rates_number(self):
+        return len(self.ratings.all())
 
     def __str__(self):
         return self.title
