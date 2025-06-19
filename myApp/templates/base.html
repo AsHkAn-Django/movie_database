@@ -31,6 +31,12 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'myApp:home' %}">Home</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'myApp:movies_list' %}">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'myApp:trends' %}">Trending Movies</a>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="#">Hi, {{user.username}}</a>

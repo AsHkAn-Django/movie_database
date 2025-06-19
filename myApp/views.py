@@ -5,7 +5,7 @@ from .models import Rating, Movie, Genre
 from .forms import RatingForm, FilterMovieForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.db.models import FloatField, Avg
+from django.db.models import FloatField, Avg, Count
 from django.db.models.functions import Round
 from .recommend import get_top_n_recommendations
 
@@ -23,6 +23,17 @@ class IndexView(generic.TemplateView):
                 context['recommends'] = Movie.objects.filter(id__in=recommend_ids)
         return context
 
+
+
+
+class TrendingMoviesListView(generic.ListView):
+    template_name = "myApp/trends.html"
+    context_object_name = 'trends'
+
+    def get_queryset(self):
+        queryset = Movie.objects.annotate(avg_rating=Avg('ratings__rate'), num_votes=Count('ratings')
+                                          ).filter(num_votes__gte=5).order_by('-avg_rating')[:10]
+        return queryset
 
 
 
