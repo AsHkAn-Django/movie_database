@@ -58,6 +58,6 @@ class Rating(models.Model):
         ]
 
     def __str__(self):
-        return f"Rating: {self.rate} for {self.movie.title}"
+        return f"{self.user.username} rate {self.rate} for {self.movie.title}"
 
 

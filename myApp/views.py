@@ -7,11 +7,29 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import FloatField, Avg
 from django.db.models.functions import Round
+from .recommend import get_top_n_recommendations
 
 
-class IndexView(generic.ListView):
-    model = Movie
+
+class IndexView(generic.TemplateView):
     template_name = "myApp/index.html"
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            recommend_ids = get_top_n_recommendations(self.request.user.id, 3)
+            if recommend_ids:
+                context['recommends'] = Movie.objects.filter(id__in=recommend_ids)
+        return context
+
+
+
+
+
+class MoviesListView(generic.ListView):
+    model = Movie
+    template_name = "myApp/movies_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -24,7 +42,7 @@ class IndexView(generic.ListView):
 
         if form.is_valid():
             rate = self.request.GET.get('filter_rate', None)
-            if rate is not None:
+            if rate:
                 movies = movies.filter(rating__gte=rate)
 
             genre = self.request.GET.get('genre', None)
