@@ -14,7 +14,6 @@ from .recommend import get_top_n_recommendations
 class IndexView(generic.TemplateView):
     template_name = "myApp/index.html"
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
@@ -25,16 +24,15 @@ class IndexView(generic.TemplateView):
 
 
 
-
 class TrendingMoviesListView(generic.ListView):
     template_name = "myApp/trends.html"
     context_object_name = 'trends'
 
     def get_queryset(self):
-        queryset = Movie.objects.annotate(avg_rating=Avg('ratings__rate'), num_votes=Count('ratings')
-                                          ).filter(num_votes__gte=5).order_by('-avg_rating')[:10]
+        queryset = Movie.objects.annotate(
+            avg_rating=Avg('ratings__rate'), num_votes=Count('ratings')
+            ).filter(num_votes__gte=5).order_by('-avg_rating')[:10]
         return queryset
-
 
 
 
