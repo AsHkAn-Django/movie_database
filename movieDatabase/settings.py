@@ -129,39 +129,9 @@ LOGIN_REDIRECT_URL = 'myApp:home'
 LOGOUT_REDIRECT_URL = 'myApp:home'
 
 
-# 1) Pull credentials & bucket from env
-R2_BUCKET   = config("R2_BUCKET_NAME")
-R2_ENDPOINT = config("R2_ENDPOINT_URL").rstrip("/")  # e.g. https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
-# 2) Common OPTIONS for both storage backends
-R2_OPTIONS = {
-    "access_key": config("R2_ACCESS_KEY_ID"),
-    "secret_key": config("R2_SECRET_ACCESS_KEY"),
-    "bucket_name": R2_BUCKET,
-    "endpoint_url": R2_ENDPOINT,
-    "region_name": "auto",
-    "signature_version": "s3v4",
-    "addressing_style": "path",     # <endpoint>/<bucket>/<key>
-    "default_acl": "public-read",
-}
-
-# 3) Tell Django 5.1+ about your storages
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        "OPTIONS": R2_OPTIONS,
-        "LOCATION": "media",     # objects under /media/
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        "OPTIONS": R2_OPTIONS,
-        "LOCATION": "static",    # objects under /static/
-    },
-}
-
-# 4) URLs your templates will use
-STATIC_URL = f"https://{R2_ENDPOINT.replace('https://','')}/{R2_BUCKET}/static/"
-MEDIA_URL  = f"https://{R2_ENDPOINT.replace('https://','')}/{R2_BUCKET}/media/"
-
-# 5) A dummy STATIC_ROOT so collectstatic won't crash
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_ROOT = BASE_DIR / "media"
